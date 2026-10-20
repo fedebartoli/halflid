@@ -1,4 +1,5 @@
-# DRAFT. Never run: no release exists yet, so the url answers 404 and the checksum is a placeholder.
+# DRAFT, never run. It points at the 0.1.0 release and carries the checksum GitHub shows for that zip, but it has not been
+# audited or installed with Homebrew, and no tap exists yet.
 #
 # This is not meant for homebrew/cask. That repository requires casks to pass Gatekeeper (signed and notarized) and
 # disables the ones that do not, and Half Lid is signed ad hoc. It is meant for a personal tap: a repository named
@@ -8,12 +9,12 @@
 #
 # (Homebrew 6 asks the user to trust a third-party tap before it installs from it.)
 #
-# To use it: build the zip with `scripts/package.sh`, attach it to a release, then put the version and the SHA-256 from
-# `build/dist/HalfLid-<version>.zip.sha256` below. Then test it for real: `brew audit --cask --online`, install, open,
-# uninstall, and check that nothing is left behind.
+# For a new version: build the zip with `scripts/package.sh`, attach it to a release, then put the version and the SHA-256 from
+# `build/dist/HalfLid-<version>.zip.sha256` below. Before it goes into a tap, test it for real: `brew audit --cask --online`,
+# install, open, uninstall, and check that nothing is left behind.
 cask "halflid" do
   version "0.1.0"
-  sha256 "REPLACE_WITH_THE_SHA256_OF_THE_ZIP"
+  sha256 "4a720e909723ef0efa4b1e288d0fae5cc99122a565c529ba8a8fd52134a88ccf"
 
   url "https://github.com/fedebartoli/halflid/releases/download/v#{version}/HalfLid-#{version}.zip"
   name "Half Lid"

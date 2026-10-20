@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "警告",
   "settings.safety.batteryStop": "停止",
   "settings.safety.time": "時間の制限",
-  "settings.safety.time.detail": "Half Lidが一度にMacのスリープを防止できる最長時間です。フタを開けるとカウントがリセットされます。",
+  "settings.safety.time.detail": "Half Lidが一度にMacのスリープを防止できる最長時間です。この上限で停止した後は、フタを開けると再開できます。",
   "settings.safety.maxBattery": "バッテリー時",
   "settings.safety.maxAC": "電源接続時",
   "settings.safety.heat": "熱",

@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "Uyar",
   "settings.safety.batteryStop": "Durdur",
   "settings.safety.time": "Süre sınırı",
-  "settings.safety.time.detail": "Half Lid’in Mac’i art arda uyanık tuttuğu en uzun süre. Kapağı açmak sayacı sıfırlar.",
+  "settings.safety.time.detail": "Half Lid’in Mac’i art arda uyanık tuttuğu en uzun süre. Bu sınırda durduktan sonra kapağı açmak yeniden başlamasına izin verir.",
   "settings.safety.maxBattery": "Pilde",
   "settings.safety.maxAC": "Şebekede",
   "settings.safety.heat": "Isı",

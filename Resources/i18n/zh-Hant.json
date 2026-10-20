@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "警告於",
   "settings.safety.batteryStop": "停止於",
   "settings.safety.time": "時間上限",
-  "settings.safety.time.detail": "Half Lid 單次保持 Mac 喚醒的最長時間。打開上蓋會重新計時。",
+  "settings.safety.time.detail": "Half Lid 單次保持 Mac 喚醒的最長時間。因達到此上限而停止後，打開上蓋即可重新開始。",
   "settings.safety.maxBattery": "使用電池",
   "settings.safety.maxAC": "連接電源",
   "settings.safety.heat": "熱度",

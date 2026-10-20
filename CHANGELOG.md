@@ -31,7 +31,8 @@ The first release. Developed and tested on macOS 26.5.2, Apple Silicon. The app 
 
 - The same closures with Half Lid not holding (the control run), and a clear that arrives after the lid has closed.
 - Closures of hours, a really empty or really hot battery, a forced power-off while armed, a Mac that sleeps and wakes during a
-  hold.
+  hold, an agent finishing a job while the lid stays closed for minutes.
+- The app and its guard being stopped at the same moment: nothing then releases the lid setting until `halflid repair` is run.
 - Claude Code, Codex, opencode, GitHub Copilot CLI and Goose on real installs. Their recognition is written from how each one is
   installed (`docs/AGENTS.md`); the Agents pane says "Not tested on a real install yet" under each.
 - Gemini CLI and other agents written as Node.js scripts are not recognised: macOS reports them as `node`.

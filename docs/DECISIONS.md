@@ -2,9 +2,10 @@
 
 Status tags: **[OK]** verified on this Mac (macOS 26.5.2, arm64), **[NOT VERIFIED]** designed or read from docs only, **[PENDING TEST]** needs the closed-lid test.
 
-Last updated 2026-10-16, after build steps 5 to 7 (section 10). Where an older section and section 10 disagree, section 10 is the newer.
+Written as the work went on, so an older section can be out of date: where it disagrees with section 10 or with
+[FINDINGS.md](FINDINGS.md), the newer text wins. Last updated 2026-10-20.
 
-Scope rule: Half Lid does one thing. When a coding agent is working and the lid is closed, the Mac stays awake with the screen dark and locked. Everything else is out (see `halflid-feature-inventory` canvas for the competitor comparison).
+Scope rule: Half Lid does one thing. When a coding agent is working and the lid is closed, the Mac stays awake with the screen dark and locked. Everything else is out (how other tools differ is in the README, "Alternatives").
 
 ## 1. Keeping the Mac awake with the lid closed
 
@@ -30,14 +31,14 @@ Second AC run, with the power-log verdict printed by the tool itself: IOKit sele
 - [NOT VERIFIED] the mask survives the process (kernel-global per the xnu source) and resets at boot. Assume it survives and keep a guard.
 - With the lid ignored, the internal display stays on. The sequence in section 5 (lock, display off) is therefore mandatory, not cosmetic.
 
-**Fallback.** `pmset -a disablesleep 1|0` through a narrow sudoers rule installed once (allows exactly those two commands, validated with `visudo -cf`, existing file backed up; template `cursor-pocket/tools/mac/power-setup.sh`). Used only if the IOKit route fails on battery or over time. Everything below about a root boot daemon applies only to this fallback.
+**Fallback.** `pmset -a disablesleep 1|0` through a narrow sudoers rule installed once (allows exactly those two commands, validated with `visudo -cf`, existing file backed up; not shipped). Used only if the IOKit route fails on battery or over time. Everything below about a root boot daemon applies only to this fallback.
 
 **Common rules.**
 
 - Armed while an agent is working, even with the lid open. The override must exist before the lid closes, otherwise the Mac sleeps at once. Armed with the lid open is harmless.
 - Re-applied several times a second while armed by the keeper (below), because the flag is shared with macOS's power daemon, which
   clears it on its own events. The first version re-applied it every 60 s, and this line also promised "after every wake", which was
-  never implemented. That gap is what failed in the user's run of 2026-10-19.
+  never implemented. That gap is what failed in the maintainer's run of 2026-10-19.
 
 **Rejected.**
 
@@ -49,7 +50,7 @@ Second AC run, with the power-log verdict printed by the tool itself: IOKit sele
 
 ### The override flag is shared with powerd, so the hold is re-applied four times a second (2026-10-19)
 
-**What failed.** The user ran `scripts/lid-check.sh` with Half Lid armed (a timed hold, on power, external monitor connected) and
+**What failed.** The maintainer ran `scripts/lid-check.sh` with Half Lid armed (a timed hold, on power, external monitor connected) and
 closed the lid three times in 90 seconds. Each time the Mac went to sleep (DarkWake and Sleep, `Clamshell Sleep`), while Half Lid
 said it was holding. Earlier the same day single closures had worked, and so had one of 29 minutes (03:25 to 03:54).
 
@@ -106,7 +107,7 @@ Uninstall with the IOKit route: clear the override and delete the app; nothing e
 
 Releasing the override must make the Mac sleep by itself.
 
-- [OK] Measured with `halflid sleep-test` (user, 2026-10-16, macOS 26.5.2, on the real IOKit route): lid closed, override released 3 s later, and the Mac went to sleep **by itself 7 s after the release** (clamshell sleep, not the idle timer), then stayed asleep 134 s until the lid was opened. Our fallback (15 s in the test) did not have to act. Not recorded: which sleep assertions were held at the time (Cursor was probably running).
+- [OK] Measured with `halflid sleep-test` (maintainer, 2026-10-16, macOS 26.5.2, on the real IOKit route): lid closed, override released 3 s later, and the Mac went to sleep **by itself 7 s after the release** (clamshell sleep, not the idle timer), then stayed asleep 134 s until the lid was opened. Our fallback (15 s in the test) did not have to act. Not recorded: which sleep assertions were held at the time (Cursor was probably running).
 - The fallback stays as a safety net for other settings or machines: if the lid is still closed and the Mac is awake 90 s after release, run `pmset sleepnow` (no root needed). Only when the lid is closed, never with the lid open. [NOT VERIFIED] on hardware, because on this Mac it was never needed.
 
 ## 3. Detecting that an agent is working
@@ -117,10 +118,10 @@ Releasing the override must make the Mac sleep by itself.
 - Idle only after about 2 minutes without any signal (grace), to ride out long network waits.
 - Cursor has no process of its own to watch. Measured (7 minutes, 5 s samples): tree CPU is 17 to 120 % (average 50 to 65 %) both while an agent works and while the chat sits waiting on a question card; session-file mtime is stale (the chat transcript file is rewritten only now and then, not live); one sleep assertion (sometimes two) is held in both states. So the process table cannot separate "working" from "waiting for me". Many chats waiting on a question is the normal state of the user, so a process-based detector would keep the Mac awake until the duration cap for nothing.
 - **Cursor choice: read Cursor's own chat state, read-only** (`Agents/CursorChatState.swift`). Prior art: Cursor Pocket (`docs/FINDINGS.md` sections 2, 8, 9) found where the state lives; the fields were re-checked live here. No hooks, no change to any Cursor configuration.
-  - Source: `~/Library/Application Support/Cursor/User/globalStorage/state.vscdb` (SQLite, 23 GB here). Opened read-only, short queries by exact key, closed after each read. About 0.4 s for a full read of the recent chats.
+  - Source: `~/Library/Application Support/Cursor/User/globalStorage/state.vscdb` (SQLite, several GB). Opened read-only, short queries by exact key, closed after each read. About 0.4 s for a full read of the recent chats.
   - Only state fields are selected (status, tool name and status, timestamps). Message text and chat names are never selected, so they never enter our process. Chat ids are shortened to 8 characters in anything we print. [OK] automated test with a canary text.
   - Per chat, in this order: waiting for the user if the last step is an unanswered `ask_question` or a tool awaiting approval (also in the step before); idle if `composerData.status` is `completed` with nothing queued; otherwise working only with a sign of life in the last 5 minutes (the header checkpoint is refreshed every 30 to 60 s during a run) and one of: run flag set, a tool still `loading`, a step written in the last 2 minutes, or an answer just submitted (the run flag is not written in that phase).
-  - [OK] Live check on this Mac: this chat (running) is "working"; four chats with an open question and one with an aborted status plus an open question are "waiting"; two finished chats are "idle". A second chat that was running changed to "waiting" two minutes later when it posted a question, and its last step confirmed it. The checkpoint age of the running chats stayed under 60 s over 80 s of sampling.
+  - [OK] Live check on this Mac: a chat that was running is "working"; four chats with an open question and one with an aborted status plus an open question are "waiting"; two finished chats are "idle". A second chat that was running changed to "waiting" two minutes later when it posted a question, and its last step confirmed it. The checkpoint age of the running chats stayed under 60 s over 80 s of sampling.
   - Limits. [NOT VERIFIED] across Cursor versions: this is an internal format and can change without notice; the reader then returns an error, the app says so and the manual hold still works. [NOT VERIFIED] a very long command with no checkpoint refresh; a Cursor that quit mid-run leaves a stale run flag (bounded by the 5-minute sign-of-life rule, and the app also requires a Cursor process). Stopped by hand: up to 5 minutes counted as working when the last step was a just-answered question.
 - Hooks (Claude Code, Codex) remain an optional later step for other agents, with a backup of the config before any change. Not needed for Cursor.
 - Adaptive idle level per agent (Keepresso's approach) over a fixed threshold (Adrafinil uses 3 % for 90 s): a TUI that animates while waiting would break a fixed number.
@@ -185,8 +186,8 @@ A window costs 11 to 19 MB and the memory does not come back after closing, with
   - The command-line tool `halflid`, which is also the guard process, sits next to the resident executable.
   - Preferences are one small JSON file in Application Support; the resident reloads it on a Darwin notification. Settings and the command line talk to the resident through distributed notifications and read its answers from `status.json` (section 10).
 - Targets, to be published only if measured and met: at most 20 MB with the default modules, idle CPU about 0 %, no network connections. [OK] met (section 8).
-- Menu content: one status line, keep awake until I say, timer entries, limits summary, settings, quit. Only entries of enabled modules appear; nothing greyed out.
-- Icon: a laptop in profile, template image, three states: idle (closed), active (half open), warning (half open plus a dot). They are the user's three drawings, traced to vectors and used as they are for the menu bar mark, the app icon, the panel and Settings (first built as my own reconstruction, replaced on 2026-10-17: see "The mark" in section 10); sources in `docs/brand`, rules in `docs/BRAND.md`. [OK]
+- Menu content: one status line, keep awake until stopped, timer entries, limits summary, settings, quit. Only entries of enabled modules appear; nothing greyed out.
+- Icon: a laptop in profile, template image, three states: idle (closed), active (half open), warning (half open plus a dot). They are the maintainer's three drawings, traced to vectors and used as they are for the menu bar mark, the app icon, the panel and Settings (first built as my own reconstruction, replaced on 2026-10-17: see "The mark" in section 10); sources in `docs/brand`, rules in `docs/BRAND.md`. [OK]
 - No emojis, no gradients, no glow.
 
 ## 7. Text, languages, build, distribution
@@ -251,9 +252,9 @@ Scope: everything in the "core" and "later" tables of the feature inventory. The
 5. CLI control, login item.
 6. The ten remaining translations (12 languages in total).
 7. Package: zip, Homebrew tap, README, LICENSE; measure memory, CPU and network and publish only measured claims.
-8. Long runs by the user: 30 to 60 minutes lid closed under load, `kill -9`, forced power-off and reboot, battery. (Release-then-sleep is done: section 2.)
+8. Long runs by the maintainer: 30 to 60 minutes lid closed under load, `kill -9`, forced power-off and reboot, battery. (Release-then-sleep is done: section 2.)
 
-Status: steps 1 to 7 are built (section 10 for 4 to 7). Step 8 is the user's and is open.
+Status: steps 1 to 7 are built (section 10 for 4 to 7). Step 8 is the maintainer's and is open.
 
 ### Build step 1 status: the headless agent loop (`halflid run`)
 
@@ -263,8 +264,8 @@ Implemented in `Loop/` (`Preferences.swift`, `WorkDetector.swift`, `AgentLoop.sw
 - **Work rule.** Work wanted = manual hold, or Cursor has at least one chat in the working state (read only when the Cursor module is on and a Cursor process exists), or a command-line agent process shows CPU of 15 % or more, or a session file written in the last 30 s. A process seen for the first time has no CPU baseline and reads as 0 until the second sample. A Cursor read error is reported as a problem and never counted as work.
 - **Preferences.** One small JSON file (`~/Library/Application Support/HalfLid/preferences.json`, overridable with `HALFLID_PREFERENCES`). Decoded on top of defaults; any problem means defaults. Limits are clamped to safe ranges (battery stop 5 to 50 %, warning at least stop + 5, hours 0.25 to 24 on battery and 0.25 to 72 on AC, battery temperature stop 38 to 50 C) so a bad value cannot disable a safety net.
 - **Guard supervision.** The loop starts one guard process while armed and stops it when disarmed. The guard is given the full environment explicitly: leaving the property unset did not hand the parent's variables to the child, so a guard started by `run` used the real IOKit override instead of the test stand-in. Found by the `kill -9` test, fixed, covered by it. A guard that finds its app dead also deletes the app's heartbeat file; with a stale heartbeat it keeps the file, because the app may still be alive.
-- [OK] Automated: 349 checks, 0 failures at the time of writing, including the real `halflid run` process (arm and release with the file stand-in, `kill -9` of the app and recovery by the guard, clean exit on SIGTERM) and a simulated CLI agent (a CPU burner) detected and released.
-- [OK] Live on this Mac with the real Cursor state: armed while this chat was running, released on SIGTERM, no leftover process or file.
+- [OK] Automated: 349 checks, 0 failures at the time of writing (the suite has grown to more than 5,000 since: `scripts/test.sh`), including the real `halflid run` process (arm and release with the file stand-in, `kill -9` of the app and recovery by the guard, clean exit on SIGTERM) and a simulated CLI agent (a CPU burner) detected and released.
+- [OK] Live on this Mac with the real Cursor state: armed while a Cursor chat was running, released on SIGTERM, no leftover process or file.
 - [NOT VERIFIED] On hardware with the lid closed (section 5) and over several hours; real command-line agents; hold behaviour if macOS clears the kernel mask on its own.
 
 ### Build step 3 status: the menu bar agent
@@ -278,11 +279,11 @@ Sources in `Sources/HalfLidApp/`: `HalfLidApp.swift` (status item, signal handli
 - **Last session** (start, end, why it ended; no names or content) is saved in `last-session.json` and shown in the menu. It replaces a separate lid-open summary for now.
 - [OK] Automated: 568 checks, 0 failures, including the real `HalfLidApp --print-menu` (idle, watched agents, holding, Italian), presentation texts for every state and stop reason in both languages, the session tracker and the instance lock.
 - [OK] The bundle runs: arms on real Cursor activity (with the stand-in override), starts the guard, exits cleanly on SIGTERM, restores the override, leaves no process, saves the last session.
-- First real launch (user, `open build/HalfLid.app`): nothing seemed to appear. First guess (partly wrong, see below): the closed-lid (idle) mark was two thin bars sitting low in the button, easy to miss among many icons. Fixed by centring it vertically (`Glyph.draw`); the three states were re-rendered and checked on a dark bar. New items are added to the left of all the others, so on a crowded bar the icon is at the far left of the status area, not next to the clock.
+- First real launch (maintainer, `open build/HalfLid.app`): nothing seemed to appear. First guess (partly wrong, see below): the closed-lid (idle) mark was two thin bars sitting low in the button, easy to miss among many icons. Fixed by centring it vertically (`Glyph.draw`); the three states were re-rendered and checked on a dark bar. New items are added to the left of all the others, so on a crowded bar the icon is at the far left of the status area, not next to the clock.
 - Second real launch: still nothing, and the diagnosis above was incomplete (the centring is still a fix, but not the cause). The 34 pt status window had been seen only for the bare `build/bin/HalfLidApp`; the bundled app created none. Cause, from the system log (`/usr/bin/log show`, process `ControlCenter`, category `appStatusItems`; note that `log` alone is a zsh builtin): for the bundle id `io.github.fedebartoli.halflid` macOS 26 logged "Starting to track blocked host" on every launch, so the item was created and immediately hidden. A bare executable is tracked as `.adhocBinary` and is allowed. When a bundled app is started from a terminal inside Cursor, macOS attributes its item to the responsible application ("Adding menu item at .bundle(X) to tracked application at .bundle(Cursor)") and then logs "Moving host to blocked list"; the state is kept per bundle id across launches and across a restart of Control Center, it is not in any readable preference file, and flipping the toggles in System Settings > Menu Bar (already on) did not change it. The old id was most likely blocked by an earlier test started from Cursor's terminal. Fix: the bundle id is now `io.github.fedebartoli.halflid.app` (nothing was published, nothing else used the old id). Verified: a build with the new id started with `open` from the same shell creates the status windows on both screens (2 windows on screen) and the log says "Starting to track host".
 - Developer rule: start the bundled app only with `open` or from Finder, never by running `HalfLid.app/Contents/MacOS/HalfLidApp` from a terminal inside Cursor (that blocks the id on this Mac). Automated tests use `--print-menu`, which exits before creating a status item. A normal user starting the app from Finder is its own responsible app, so this does not affect users. Setting `autosaveName` / `isVisible` made no difference and was reverted.
-- [OK] Third launch (user, `open build/HalfLid.app`, id `io.github.fedebartoli.halflid.app`): the user sees the icon in the real menu bar and the menu opens when clicked.
-- Repeat of the block, caused by me: while checking the panel I started `build/HalfLid.app/Contents/MacOS/HalfLidApp` from the terminal, against the rule above. The log showed "Moving host to blocked list" for `io.github.fedebartoli.halflid.app` at once, and also for the copy the user already had running (so its icon was hidden). Bundle id changed again, to `io.github.fedebartoli.halflid.menubar`. For any check that needs the real process, run the bare `build/bin/HalfLidApp` (tracked as an ad hoc binary, never blocked); the panel executable is found next to it, in `build/bin`. Never run anything inside `HalfLid.app` from a terminal.
+- [OK] Third launch (maintainer, `open build/HalfLid.app`, id `io.github.fedebartoli.halflid.app`): the icon is seen in the real menu bar and the menu opens when clicked.
+- Repeat of the block: while the panel was being checked, `build/HalfLid.app/Contents/MacOS/HalfLidApp` was started from the terminal, against the rule above. The log showed "Moving host to blocked list" for `io.github.fedebartoli.halflid.app` at once, and also for the copy the maintainer already had running (so its icon was hidden). Bundle id changed again, to `io.github.fedebartoli.halflid.menubar`. For any check that needs the real process, run the bare `build/bin/HalfLidApp` (tracked as an ad hoc binary, never blocked); the panel executable is found next to it, in `build/bin`. Never run anything inside `HalfLid.app` from a terminal.
 - [NOT VERIFIED] The icon's look in light/dark bars; accessibility with VoiceOver; the order of the menu entries.
 - [SINCE BUILT] Notifications, launch at login, the settings window, the icon redesign, the ten other translations and the CLI `start/stop/status`: section 10.
 
@@ -349,14 +350,14 @@ The tool lives in `Contents/MacOS` of the app; the Settings app finds it from in
 
 Twelve flat catalogs, `Resources/i18n/<code>.json`: en, it, es, fr, de, pt (Brazil), ja, zh-Hans, zh-Hant, ko, ru, tr. A test
 fails when a key or a placeholder differs from English. [OK] The panel was rendered offscreen in all twelve languages and six
-states (welcome, active, hold, stopped, warning, idle) and nothing is cut off or overlaps. All the translations were written by
-the assistant; none was reviewed by a native speaker. [NOT VERIFIED] wording, and the Settings window in each language.
+states (welcome, active, hold, stopped, warning, idle) and nothing is cut off or overlaps. All the translations are machine-written;
+none was reviewed by a native speaker. [NOT VERIFIED] wording, and the Settings window in each language.
 Turkish "Working" was changed from "Çalışıyor" to "Aktif" because it differed by one letter from "Çalışmıyor" (not running).
 
 ### Agent logos
 
 The marks of Cursor, Claude Code, Codex, opencode, GitHub Copilot CLI and Goose ship as small SVG files in
-`Resources/agent-marks`, drawn on uniform tiles by `AgentMark`. Where each comes from and under which licence is in `NOTICE`,
+`Resources/agent-marks`, drawn on uniform tiles by `AgentMark`. Where each comes from and under which license is in `NOTICE`,
 which also says that the logos belong to their owners and that Half Lid is not affiliated with any of them. The trademark
 exposure is real and is the maintainer's call: the logos are used to say which agent a row is about, and removing them is one
 file per agent. In `agents.json` only Cursor is `verified: true`; the other five are `false` for detection (section 9) and the
@@ -365,10 +366,10 @@ among them), is in `docs/AGENTS.md`.
 
 ### The mark (reworked 2026-10-17)
 
-The first version of the mark was my own reconstruction of the three drawings: a parametric laptop, a simplified variant for
+The first version of the mark was a reconstruction of the three drawings: a parametric laptop, a simplified variant for
 small sizes, and the system symbol `laptopcomputer` in the Settings sidebar. Laid over the drawings it overlapped 88 to 94 %,
-its lid opened wider than the drawing's, and it was not the maintainer's artwork. He asked for his three drawings and nothing
-else (closed, open, open with a dot), so it was replaced:
+its lid opened wider than the drawing's, and it was not the maintainer's artwork. The maintainer asked for his three drawings
+and nothing else (closed, open, open with a dot), so it was replaced:
 
 - `docs/brand/trace-marks.py` (Python with numpy, scipy, scikit-image and Pillow, needed only to run the script) traces each
   JPEG: the outline at the half-grey level, corners kept, curves fitted with cubic Beziers within 0.45 px, the two ports as
@@ -390,7 +391,7 @@ else (closed, open, open with a dot), so it was replaced:
   [NOT VERIFIED] the real menu bar with the new icon: the copy of Half Lid that was already running was not touched and keeps the
   old icon until it is quit and opened again.
 
-### Isolating a test run (found 2026-10-17, caused by me)
+### Isolating a test run (found 2026-10-17)
 
 A second copy of the resident app can be started for a measurement only with the file stand-in for the override
 (`HALFLID_FAKE_OVERRIDE`), which also skips the instance lock. `HOME=/tmp/something` does **not** isolate it: the app expands `~`
@@ -400,9 +401,9 @@ Those numbers were thrown away. To isolate a run set `HALFLID_PREFERENCES`, `HAL
 files of its own, with `cursorEnabled` false and an empty `cliAgents` in the preferences file, and compare the real folder
 before and after (`diff` of `ls -la`). Never send `halflid start` or `stop` during such a run: the running copy would obey it too.
 
-### A timed hold that never ended on screen (found 2026-10-18 in the user's own run, fixed)
+### A timed hold that never ended on screen (found 2026-10-18 in the maintainer's own run, fixed)
 
-The user kept the Mac awake for 30 minutes, closed the lid and found the lock screen on opening. That is the design, not a sleep:
+The maintainer kept the Mac awake for 30 minutes, closed the lid and found the lock screen on opening. That is the design, not a sleep:
 "Lock the screen" is on by default (step 1 of section 5), `sysadminctl -screenLock status` says the system's own lock is off so the
 lock came from Half Lid, and the power log shows two short closures (1 s and 3 s) with display off and on and no sleep.
 Looking at what the app had published afterwards showed a real bug: `status.json` still said "held until 16:18" more than an hour

@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "Warnen bei",
   "settings.safety.batteryStop": "Stoppen bei",
   "settings.safety.time": "Zeitlimit",
-  "settings.safety.time.detail": "Die längste Dauer, die Half Lid den Mac am Stück wach hält. Beim Öffnen des Deckels beginnt die Zählung neu.",
+  "settings.safety.time.detail": "Die längste Dauer, die Half Lid den Mac am Stück wach hält. Nach einem Stopp an dieser Grenze ermöglicht das Öffnen des Deckels einen Neustart.",
   "settings.safety.maxBattery": "Am Akku",
   "settings.safety.maxAC": "Am Netzteil",
   "settings.safety.heat": "Temperatur",

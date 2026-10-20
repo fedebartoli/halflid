@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "Предупредить при",
   "settings.safety.batteryStop": "Остановить при",
   "settings.safety.time": "Лимит времени",
-  "settings.safety.time.detail": "Максимальное время, на которое Half Lid удерживает Mac от сна за один раз. Открытие крышки начинает отсчёт заново.",
+  "settings.safety.time.detail": "Максимальное время, на которое Half Lid удерживает Mac от сна за один раз. После остановки по этому лимиту открытие крышки позволяет начать снова.",
   "settings.safety.maxBattery": "От батареи",
   "settings.safety.maxAC": "От сети",
   "settings.safety.heat": "Нагрев",

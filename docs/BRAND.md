@@ -87,5 +87,5 @@ Only what was measured or checked, with the date, the machine and the method, an
 ## Naming the agents
 
 Cursor, Claude Code, Codex, opencode, GitHub Copilot CLI and Goose are named and shown with their logos only to say which agent a
-row is about. Say "watches" or "works with", never "official", "for" or "powered by". Where each logo comes from, under which licence,
+row is about. Say "watches" or "works with", never "official", "for" or "powered by". Where each logo comes from, under which license,
 and what to do if an owner objects is in `NOTICE`. The names and logos belong to their owners.

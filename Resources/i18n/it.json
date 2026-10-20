@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "Avvisa al",
   "settings.safety.batteryStop": "Fermati al",
   "settings.safety.time": "Limite di tempo",
-  "settings.safety.time.detail": "Il tempo massimo in cui Half Lid tiene il Mac sveglio in una volta. Aprire il coperchio fa ricominciare il conteggio.",
+  "settings.safety.time.detail": "Il tempo massimo in cui Half Lid tiene il Mac sveglio in una volta. Dopo uno stop a questo limite, aprire il coperchio permette di ripartire.",
   "settings.safety.maxBattery": "A batteria",
   "settings.safety.maxAC": "Con alimentatore",
   "settings.safety.heat": "Calore",

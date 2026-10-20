@@ -17,7 +17,7 @@ from "kept awake". The first version of the test used the heartbeat and misread 
 | --- | --- | --- |
 | Nothing changed (22 s) | `Entering Sleep state due to 'Clamshell Sleep'` | Slept, as expected |
 | IOKit `kPMSetClamshellSleepState` (selector 12), no privileges, on power (28 s and 30 s) | No power event at all, not even display off | **Lid ignored** [OK] |
-| Same, on battery (15 s, one run by the user) | The user heard the test tool's beeps with the lid closed; no power event | **Lid ignored** [OK] |
+| Same, on battery (15 s, one run by the maintainer) | The maintainer heard the test tool's beeps with the lid closed; no power event | **Lid ignored** [OK] |
 | `caffeinate -s` (42 s) | `Entering DarkWake state due to 'Clamshell Sleep'`, display off | Partly awake only |
 | `pmset disablesleep` | Not run | [NOT VERIFIED] |
 
@@ -40,9 +40,9 @@ from "kept awake". The first version of the test used the heartbeat and misread 
 - [OPEN] Hours with the lid closed (one closure of 29 minutes on 2026-10-19 kept the Mac awake); that the override resets at boot
   (the kernel mask is global per the xnu sources). Whether macOS clears it by itself was answered the hard way, see 1b: it does.
 
-### 1b. A hold that failed in the user's own run, and why (2026-10-19)
+### 1b. A hold that failed in the maintainer's own run, and why (2026-10-19)
 
-The user ran `scripts/lid-check.sh` with Half Lid armed (a timed hold, on power, an external monitor connected) and closed the lid
+The maintainer ran `scripts/lid-check.sh` with Half Lid armed (a timed hold, on power, an external monitor connected) and closed the lid
 three times in 90 seconds (6 s, 2 s and 54 s). The report said the Mac went to sleep with the lid closed while Half Lid said it was
 holding. The same morning, single closures had worked, among them one of 29 minutes (03:25:02 to 03:54:17, `disabled 0/2` at the
 close and no `Clamshell Sleep` until the lid was opened and closed again at 03:55).
@@ -82,7 +82,7 @@ ids, which tells the two writers apart. [OK]
 
 **What changed.** `OverrideKeeper` applies the override four times a second while armed, and again at once and over the next 1.6
 seconds on every power-registry message, wake, screen wake or sleep and display change (DECISIONS 1, last subsection). It is checked
-by tests and by a real process against the file stand-in. [NOT VERIFIED] with the lid closed after the change. If powerd also clears
+by tests and by a real process against the file stand-in. The closed-lid runs of 2026-10-20 below checked it with the real lid. If powerd also clears
 the flag after the lid has closed, the keeper cannot help; `scripts/lid-check.sh` reports that case by name.
 
 **First closure with the keeper (2026-10-20, 14:48).** Same Mac, same monitor (VG270U P, connected and online), on power, Half Lid
@@ -140,7 +140,7 @@ close would be the dangerous case); closures of hours; battery power; a Mac that
   was working or a chat sat waiting on a question; session-file times were stale; one or two sleep assertions were held in
   both states. A process-based detector would keep the Mac awake all day for chats that wait for the user.
 - **Cursor's own chat state can tell them apart.** It lives in `~/Library/Application Support/Cursor/User/globalStorage/state.vscdb`
-  (SQLite, 23 GB on this Mac). It is opened read-only, by exact key, and only status fields are selected (status, tool name and
+  (SQLite, several GB). It is opened read-only, by exact key, and only status fields are selected (status, tool name and
   status, timestamps), so message text and chat names never enter Half Lid. A full read takes about 0.4 s. On this Mac the
   running chat was "working", four chats with an open question were "waiting", two finished chats were "idle", and a chat
   changed to "waiting" two minutes after it posted a question. [OK]
@@ -149,7 +149,7 @@ close would be the dangerous case); closures of hours; battery power; a Mac that
 - **Command-line agents** are recognised by process names and install paths, and counted as working when the process tree is
   busy (15 % of one core or more) or a session file was written in the last 30 seconds. This was calibrated with a simulated
   agent, not with the real ones. [NOT VERIFIED] with real Claude Code, Codex, opencode, GitHub Copilot CLI and Goose:
-  none of them was installed on this Mac, and installing software to test was not asked for. The two last ones were added on
+  none of them is installed on this Mac, and nothing was installed to test them. The two last ones were added on
   2026-10-20 from their public documentation only. On the same day the matching rules were checked against how each agent is
   installed (package manifests, Homebrew definitions, public bug reports) and one real mismatch was found and fixed: the native
   installer of Claude Code runs a file named after its version, so macOS calls the process `2.1.168` and not `claude`, and a
@@ -223,8 +223,27 @@ mark). Opening Settings once did not change it at the resolution of `footprint` 
 ## 5. Not done, on purpose or for lack of a Mac
 
 - Hours with the lid closed, a flat or hot battery, a forced power-off while armed, a reboot while armed.
-- Real installs of four of the five agents; macOS 14 and 15; Intel; VoiceOver speech (only the accessibility tree of the
+- Real installs of Claude Code, Codex, opencode, GitHub Copilot CLI and Goose; macOS 14 and 15; Intel; VoiceOver speech (only the accessibility tree of the
   panel was read: every control in it has a label).
 - Notifications from prompt to banner, and Open at login, which both need an answer from the person at the keyboard.
 - Energy impact in Activity Monitor, memory over many hours, network traffic over time (only open sockets were checked, and
   the source contains no network API).
+
+## 6. Gaps in the safety net, found by reading the code
+
+A review of the code on 2026-10-20 looked for ways the Mac could be left holding the lid setting. These come from reading, not
+from a test or a Mac, and none has been seen to happen: each needs a second thing to go wrong first.
+
+- **The app hangs and the guard is killed.** A hung app alone is covered: its heartbeat goes stale and the guard releases the
+  lid setting after 120 seconds (the keeper stops re-applying it by itself after 30 seconds without a sign of life from the
+  loop, which does not clear it). With the guard gone too, nothing releases it until `halflid repair`.
+- **A release that keeps failing.** The app tries to release three times, 0.2 seconds apart; when it then stops the guard, the
+  guard tries three more times, one second apart, on its way out. The setting cannot be read back, so if the call keeps
+  failing for that long nothing notices, and nothing tries again until Half Lid next lets go or `halflid repair` runs.
+- **The app's process number is reused at once.** The guard asks whether the app's process still exists. If the app dies and
+  another program is given the same number before the guard looks again, it falls back to the heartbeat and releases only when
+  that is 120 seconds old.
+- **A saved brightness is applied at every start.** If a crash left the file while the display was dark, the next start (and
+  `halflid repair`) restores it, even if the brightness was changed by hand in between.
+- **A lock file that cannot be created.** Then the app and `halflid run` do not keep each other out, and two controllers could
+  clear each other's setting. The app goes on rather than refuse to protect the Mac; that was a choice, not an oversight.

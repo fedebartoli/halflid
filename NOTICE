@@ -16,7 +16,7 @@ AGENT LOGOS
 Half Lid shows the logo of each coding agent it can watch, next to the agent's name, only to say which agent a row is about.
 The logos are small SVG files in Resources/agent-marks. The first lines of each file say where it came from.
 
-  Agent               Source          Licence of the artwork
+  Agent               Source          License of the artwork
   ------------------  --------------  ----------------------
   Cursor              simple-icons    CC0 1.0 Universal
   Claude Code         simple-icons    CC0 1.0 Universal
@@ -57,7 +57,7 @@ TRADEMARKS
 ==========
 
 Cursor, Claude, Claude Code, Codex, OpenAI, opencode, GitHub, GitHub Copilot and Goose, and their logos, are trademarks or
-registered trademarks of their respective owners. An open licence on a drawing of a logo does not give anyone rights over
+registered trademarks of their respective owners. An open license on a drawing of a logo does not give anyone rights over
 the trademark itself.
 
 Half Lid is an independent project. It is not affiliated with, endorsed by or sponsored by any of those companies or

@@ -14,7 +14,7 @@ and has not been checked is listed under [Does it work?](#does-it-work).
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/panel-active-dark.png">
-    <img alt="The Half Lid panel under the menu bar icon: Keeping the Mac awake, Cursor and Claude Code working, a row with a switch for each agent" src="docs/screenshots/panel-active-light.png" width="250">
+    <img alt="The Half Lid panel under the menu bar icon: Keeping the Mac awake, Cursor working and Claude Code idle, a row with a switch for each agent" src="docs/screenshots/panel-active-light.png" width="250">
   </picture>
   &nbsp;&nbsp;
   <picture>
@@ -39,12 +39,14 @@ translucent. More: the panel during [a manual hold](docs/screenshots/panel-hold-
 - **Locks the screen and turns the display off** when the lid closes, and puts the brightness back when it opens.
 - **Lets go by itself.** When the work ends, the Mac goes to sleep with the lid closed as usual. Battery low, battery hot,
   the Mac running hot and a time limit all stop it too (defaults [below](#safety-limits)).
-- **Cannot leave the Mac stuck awake.** A separate guard process undoes everything if the app dies, even with `kill -9`.
+- **Puts things back if the app dies.** A separate guard process releases the lid setting and restores the brightness when the
+  app disappears, even with `kill -9`, or stops responding. The automated tests check this with a file standing in for the lid
+  setting; what has and has not been seen on a real closed lid is under [Does it work?](#does-it-work).
 
 ## Install
 
-Requires macOS 14 or later. Developed and tested on macOS 26.5.2 on Apple Silicon; the Intel half of the download is built
-but has never been run, and macOS 14 and 15 have not been tried.
+Built for macOS 14 or later, but only ever run on macOS 26.5.2 on Apple Silicon: macOS 14 and 15 have not been tried, and
+the Intel half of the download is built but has never been run.
 
 **From a download.** Unzip `HalfLid-<version>.zip`, drag `HalfLid.app` to Applications and open it. The app is signed
 ad hoc and is not notarized (that costs an Apple Developer subscription, which this project does not have), so macOS
@@ -92,13 +94,16 @@ send; there is an issue form for it.
 ```sh
 halflid status [--json]    # what Half Lid is doing; exit code 3 when it is not running
 halflid start [30 | 2h]    # keep awake for 30 minutes, 2 hours, or until `halflid stop` without a duration
-halflid stop
+halflid stop               # ends a hold you started; an agent that is working still keeps the Mac awake
 halflid repair             # put the lid behaviour and the display brightness back to normal
 ```
 
 The tool is inside the app (`HalfLid.app/Contents/MacOS/halflid`); Settings, General, has a button that copies its path
-so you can link it into your `PATH`. `start` and `stop` can be switched off in Settings. The text follows the system
-language.
+so you can link it into your `PATH`. `start` and `stop` can be switched off in Settings. Exit codes: 0 done, 3 Half Lid is
+not running, 4 command-line control is switched off, 5 no answer, 64 wrong use. The text follows the system language.
+
+`repair` is for when Half Lid is not holding the Mac: while it is, Half Lid sets the lid behaviour again within a fraction of a
+second, on purpose.
 
 ## Safety limits
 
@@ -107,7 +112,7 @@ Every limit can be changed in Settings. Values outside a safe range are correcte
 | What | Default |
 | --- | --- |
 | Battery | warn at 30 %, stop at 20 %; resumes only on power or 5 points higher |
-| Time | 4 hours on battery, 12 hours on power (opening the lid starts a new count) |
+| Time | 4 hours on battery, 12 hours on power, counted from when Half Lid took hold; after it has stopped at the limit, opening the lid lets a new session start |
 | Heat | stop when macOS reports a Serious thermal state or worse |
 | Battery temperature | warn at 42 C, stop at 45 C once it has stayed there for a minute |
 | After the work ends | waits 2 minutes, to ride out slow networks, then lets go |
@@ -134,11 +139,13 @@ Half Lid runs on your Mac and nothing leaves it: no account, no analytics, no up
   step (without the lock the Mac stays unlocked behind the dark screen); Settings, Diagnostics, shows whether both exist on
   your Mac.
 - Small files in `~/Library/Application Support/HalfLid`: your preferences, the last session (times and why it ended, no
-  names), the saved brightness while the display is dark, and the status that `halflid status` reads while the app runs.
+  names), the saved brightness while the display is dark, the status that `halflid status` reads while the app runs, and two
+  empty lock files (one copy of the app and of Settings at a time). While it holds the Mac, a heartbeat file in your temporary
+  folder tells the guard the app is alive.
 - Optionally a login item and notification permission, if you ask for them.
 
-Everything is undone when the work ends, when you stop it, when you quit, and by the guard if the app disappears. If
-something ever looks wrong, `halflid repair` or Settings, Diagnostics, Repair puts it right.
+The lid setting and the brightness are put back when the work ends, when you stop it, when you quit, and by the guard if the
+app disappears. If something ever looks wrong, `halflid repair` or Settings, Diagnostics, Repair puts it right.
 
 ### Uninstall
 
@@ -202,28 +209,43 @@ What has been checked, and what has not.
 - **By the automated tests** (more than 5,000 checks): the limits against a simulated clock, battery and heat; the guard
   restoring everything after `kill -9` and after a hung app, with a file standing in for the lid override; the twelve
   languages; the command-line control; what each process sends the others.
-- **Not checked yet:** the control run (the same closures with Half Lid not holding); a clear after the lid has closed (never seen); hours with the lid closed; an agent finishing a job while the lid stays closed for minutes (the script shows
-  that the Mac and the network keep running, which the job needs, not the job itself); a really empty or really hot battery; a forced power-off while armed; Claude
-  Code, Codex, opencode, GitHub Copilot CLI and Goose on real installs (their recognition is written from how each is installed
-  and is marked unverified in `Resources/agents.json`, see [docs/AGENTS.md](docs/AGENTS.md)); notifications from permission
-  prompt to banner; Open at login; macOS 14 and 15; Intel Macs.
+- **Not checked yet:**
+  - the control run (the same closures with Half Lid not holding);
+  - a clear after the lid has closed (never seen);
+  - hours with the lid closed;
+  - an agent finishing a job while the lid stays closed for minutes (the script shows that the Mac and the network keep
+    running, which the job needs, not the job itself);
+  - a really empty or really hot battery;
+  - a forced power-off while armed;
+  - the app and its guard being stopped at the same moment: then nothing releases the lid setting until you run
+    `halflid repair` (a restart should clear it too, but that was not checked);
+  - Claude Code, Codex, opencode, GitHub Copilot CLI and Goose on real installs (their recognition is written from how each is
+    installed and is marked unverified in `Resources/agents.json`, see [docs/AGENTS.md](docs/AGENTS.md));
+  - notifications from permission prompt to banner, and Open at login;
+  - macOS 14 and 15, and Intel Macs.
 
 Details and the evidence are in [docs/FINDINGS.md](docs/FINDINGS.md) and [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Alternatives
 
-Half Lid is one of several tools for the same job. As far as their own pages say (October 2026):
+Half Lid is one of many tools for the same job, and several of them are good. As far as their own pages say (October 2026):
 
-- **Amphetamine** (free, Mac App Store) is a general keep-awake tool with triggers and a closed-display mode.
-- **Hold My Lid** (paid, closed source) learns whether Claude Code, Codex or OpenCode is working from the hooks those agents
-  expose.
-- **Lidless, Sleepless, Insomnia, LidAwake, StayAwake** and others (open source) switch the system's `disablesleep` flag (what
-  `pmset -a disablesleep` sets), which needs administrator rights, so they install a privileged helper or a `sudoers` rule, or
-  ask for the password. StayAwake also watches Claude Code, Codex and Cursor.
+- **[Amphetamine](https://apps.apple.com/us/app/amphetamine/id937984704)** (free, Mac App Store) is a general keep-awake tool
+  with triggers and an option to stay awake with the built-in display closed.
+- **[Hold My Lid](https://holdmylid.app/)** (paid, one-time purchase) learns whether an agent is working from the hooks that
+  Claude Code, Codex and OpenCode expose, and from the running process for Cursor and a few others.
+- **[Insomnia](https://github.com/krishhgg/Insomnia)**, **[Sleepless](https://github.com/Aboudjem/Sleepless)**,
+  **[Lidless](https://github.com/nghialuong/Lidless)**, **[LidAwake](https://github.com/Vladimir-Podgornyi/LidAwake)** and
+  **[StayAwake](https://github.com/TY-teo/StayAwake)** (open source; several projects share these names, these are the most
+  starred) switch the system's `disablesleep` flag (what `pmset -a disablesleep 1` sets), which needs administrator rights:
+  Insomnia, Sleepless and StayAwake install a narrow `sudoers` rule (StayAwake can also ask for the password each time),
+  Lidless and LidAwake a privileged helper. StayAwake is aimed at Claude Code, Codex and Cursor too, but you switch it on
+  yourself and a timer ends it.
 
 What Half Lid does differently: it needs no password, no `sudoers` rule and no helper (an IOKit call as your user, with a
-separate guard process that puts everything back if the app dies), it installs no hooks in any agent, and it reads Cursor's
-chat state to tell a working chat from one waiting for you. What it does not have: a track record. It has been run on one Mac.
+separate guard process that is meant to put things back if the app dies), it installs no hooks in any agent, and it reads
+Cursor's chat state to tell a working chat from one waiting for you. What it does not have: a track record. It has been run on
+one Mac.
 
 ## Languages
 
@@ -239,10 +261,11 @@ scripts/make-app.sh       # build/HalfLid.app, signed ad hoc
 scripts/package.sh        # build/dist/HalfLid-<version>.zip and its checksum
 scripts/lid-check.sh      # watches a closure of the lid from outside; it asks you to close and open the lid
 scripts/screenshots.sh    # the pictures in docs/screenshots, from the real programs with sample data (briefly takes the focus)
+scripts/social-preview.sh # docs/brand/social-preview.png, the picture shown when the repository link is shared
 ```
 
 Built with `swiftc` only: no SwiftPM, no Xcode project, no third-party code. SwiftPM does not work on every Command Line
-Tools install (see FINDINGS). The code is in `Sources/` (`HalfLidCore` is the part that decides; the rest is windows).
+Tools install (see [docs/FINDINGS.md](docs/FINDINGS.md)). The code is in `Sources/` (`HalfLidCore` is the part that decides; the rest is windows).
 
 ## Contributing and security
 
@@ -254,4 +277,4 @@ issue: see [SECURITY.md](SECURITY.md).
 
 [MIT](LICENSE). The name, the mark and how to talk about them are in [docs/BRAND.md](docs/BRAND.md). The logos of the agents are the property of their owners and are shown only to say which agent a row is
 about; Half Lid is not affiliated with, endorsed by or sponsored by any of them. Where each logo comes from and under which
-licence is in [NOTICE](NOTICE).
+license is in [NOTICE](NOTICE).

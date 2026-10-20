@@ -94,11 +94,11 @@ fails the tests; that proves the rules do what this page says, not that the agen
 
 | Agent | Why it is not in the catalog (2026-10-20) |
 | --- | --- |
-| Gemini CLI | Was in the catalog until this check. Its npm package and the Homebrew formula (which depends on `node`) are a Node.js script: the process is `node` ([a macOS check by another project](https://github.com/codeaholicguy/ai-devkit/pull/70) says the same). Since version 0.43.0 every release also carries a single-file native build, which would be called `gemini`, but it is an unsigned test channel and not what people install. Nothing to match without reading command lines. |
+| Gemini CLI | Was in the catalog until this check. Its npm package and the Homebrew formula (which depends on `node`) are a Node.js script: the process is `node` ([a macOS check by another project](https://github.com/codeaholicguy/ai-devkit/pull/70) says the same). Nothing to match without reading command lines. |
 | Qwen Code, Cline CLI | Node.js programs, same reason. |
 | Aider | A Python program (the process is `Python`), and it keeps its history files inside each project folder, so there is no folder to watch. |
 | Amp | Current versions keep their threads on the server; nothing is written locally to watch. |
-| Droid (Factory) | A native program with a documented session folder, so it fits. Left out only because no logo under a free licence was found; the first candidate to add. |
+| Droid (Factory) | A native program with a documented session folder, so it fits. Left out only because no logo under a free license was found; the first candidate to add. |
 | Kiro CLI | A native program, but its documentation and the tools that read its data disagree about where sessions are stored. Waiting for someone with an install. |
 | Crush | Keeps its sessions in a `.crush` folder inside each project, so there is no fixed folder to watch. |
 
@@ -142,7 +142,7 @@ A failing one is just as useful: the `ps` lines say what to match.
 1. Add an entry to `Resources/agents.json`: `id`, `processNames` and/or `pathContains` (the name macOS reports for the real
    file, see above), `sessionPaths`, `verified: false`, `mark`.
 2. Add a monochrome mark, `Resources/agent-marks/<mark>.svg`: a `viewBox`, one or more plain `<path>` elements, nothing else.
-   Use a logo under a licence that allows it and say where it came from in the first lines of the file and in `NOTICE`.
+   Use a logo under a license that allows it and say where it came from in the first lines of the file and in `NOTICE`.
 3. Add `agent.<id>` (the display name) to all twelve files in `Resources/i18n`. The tests fail if one is missing.
 4. Add the install shapes you know to `runProcessShapeTests` in `Tests/HalfLidCoreTests/AgentTests.swift`, and run
    `scripts/test.sh`.

@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "Warn at",
   "settings.safety.batteryStop": "Stop at",
   "settings.safety.time": "Time limit",
-  "settings.safety.time.detail": "The longest Half Lid keeps the Mac awake in one go. Opening the lid starts a new count.",
+  "settings.safety.time.detail": "The longest Half Lid keeps the Mac awake in one go. After it stops at this limit, opening the lid lets it start again.",
   "settings.safety.maxBattery": "On battery",
   "settings.safety.maxAC": "On power",
   "settings.safety.heat": "Heat",

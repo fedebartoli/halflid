@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "경고 기준",
   "settings.safety.batteryStop": "중지 기준",
   "settings.safety.time": "시간 한도",
-  "settings.safety.time.detail": "한 번에 Half Lid가 Mac 절전을 방지하는 최대 시간입니다. 뚜껑을 열면 새로 집계합니다.",
+  "settings.safety.time.detail": "한 번에 Half Lid가 Mac 절전을 방지하는 최대 시간입니다. 이 한도에서 멈춘 뒤에는 뚜껑을 열면 다시 시작할 수 있습니다.",
   "settings.safety.maxBattery": "배터리 사용",
   "settings.safety.maxAC": "전원 연결",
   "settings.safety.heat": "열",

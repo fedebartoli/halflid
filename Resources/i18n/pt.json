@@ -128,7 +128,7 @@
   "settings.safety.batteryWarn": "Avisar em",
   "settings.safety.batteryStop": "Parar em",
   "settings.safety.time": "Limite de tempo",
-  "settings.safety.time.detail": "O tempo máximo que o Half Lid mantém o Mac acordado de uma vez. Abrir a tampa reinicia a contagem.",
+  "settings.safety.time.detail": "O tempo máximo que o Half Lid mantém o Mac acordado de uma vez. Depois de uma parada neste limite, abrir a tampa permite recomeçar.",
   "settings.safety.maxBattery": "Na bateria",
   "settings.safety.maxAC": "Na energia",
   "settings.safety.heat": "Calor",

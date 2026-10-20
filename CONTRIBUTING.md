@@ -28,7 +28,8 @@ README under "Does it work?".
   The tests fail when a language lacks a key. No emojis in the interface; the marks and icons are drawn, not typed.
 - **The interface follows the Mac:** semantic colours (light and dark), keyboard use, a label for every control for VoiceOver.
 - **Say what you checked.** In code comments, notes and pull requests, separate "checked, on this Mac, this macOS" from "written
-  from documentation". The notes in `docs/` use the tags **[OK]**, **[NOT VERIFIED]** and **[PENDING TEST]** for that.
+  from documentation". The notes in `docs/` use the tags **[OK]** (seen on a real Mac), **[NOT VERIFIED]** (read or inferred) and **[OPEN]** or
+  **[PENDING TEST]** (still to be settled) for that.
 
 ## Things only a real Mac can show
 
