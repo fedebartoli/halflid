@@ -116,11 +116,11 @@ wait_for_quiet() { # a picture takes the keyboard focus for a few seconds: not w
 }
 
 # Sample data. The status names this script as the running menu bar app, so the window sees "a Half Lid that is keeping the Mac
-# awake for Cursor and Claude Code".
+# awake for Cursor". Only Cursor works in the pictures: it is the one agent seen working on a real Mac.
 echo '{"language": "en"}' > "$WORK/preferences.json"
 cat > "$WORK/status.json" <<JSON
-{"pid": $$, "armed": true, "indicator": "active", "title": "Keeping the Mac awake", "detail": "Claude Code and Cursor are working",
- "holdUntilStopped": false, "workingAgents": ["cursor", "claude-code"], "openAtLogin": "enabled", "notificationAccess": "allowed"}
+{"pid": $$, "armed": true, "indicator": "active", "title": "Keeping the Mac awake", "detail": "Cursor working",
+ "holdUntilStopped": false, "workingAgents": ["cursor"], "openAtLogin": "enabled", "notificationAccess": "allowed"}
 JSON
 VERSION="$(sed -n 's/^VERSION="${VERSION:-\(.*\)}"$/\1/p' scripts/make-app.sh)"
 SAMPLE=(

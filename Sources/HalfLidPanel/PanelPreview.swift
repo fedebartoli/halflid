@@ -117,7 +117,8 @@ enum PanelPreview {
             status = AgentLoop.Status(armed: false, indicator: .warning, latch: .batteryLow, report: report, at: now)
         default: // active
             let chats = [CursorChat(id: "a", activity: .working)]
-            report = WorkReport(working: true, cursor: CursorActivity(chats: chats), workingAgents: ["claude-code"], seenAgents: ["cursor", "claude-code"])
+            // Only Cursor works in the picture: it is the one agent seen working on a real Mac. Claude Code is shown as running but idle.
+            report = WorkReport(working: true, cursor: CursorActivity(chats: chats), workingAgents: [], seenAgents: ["cursor", "claude-code"])
             status = AgentLoop.Status(armed: true, indicator: .active, report: report, armedSeconds: 4_320, at: now)
         }
         let session = SessionSummary(startedAt: now.addingTimeInterval(-4_320), endedAt: now, ending: .finished)
