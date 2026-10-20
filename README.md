@@ -8,8 +8,8 @@ ends (or the battery, the heat or the clock say enough) everything goes back to 
 
 It is a small menu bar app for macOS. No account, no network, no admin password, MIT licensed.
 
-**Status:** version 0.1.0, the first release. It has been tested by its author on one Mac, with the lid really closed; what has
-and has not been checked is listed under [Does it work?](#does-it-work).
+**Status:** version 0.1.1. It has been tested by its author on one Mac, with the lid really closed; what has and has not been
+checked is listed under [Does it work?](#does-it-work).
 
 <p align="center">
   <picture>
@@ -219,8 +219,9 @@ What has been checked, and what has not.
   - a forced power-off while armed;
   - the app and its guard being stopped at the same moment: then nothing releases the lid setting until you run
     `halflid repair` (a restart should clear it too, but that was not checked);
-  - Claude Code, Codex, opencode, GitHub Copilot CLI and Goose on real installs (their recognition is written from how each is
-    installed and is marked unverified in `Resources/agents.json`, see [docs/AGENTS.md](docs/AGENTS.md));
+  - Codex, opencode, GitHub Copilot CLI and Goose on real installs, and Claude Code beyond a first partial report (their
+    recognition is written from how each is installed and is marked unverified in `Resources/agents.json`, see
+    [docs/AGENTS.md](docs/AGENTS.md));
   - notifications from permission prompt to banner, and Open at login;
   - macOS 14 and 15, and Intel Macs.
 

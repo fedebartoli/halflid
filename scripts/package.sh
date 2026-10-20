@@ -1,7 +1,7 @@
 #!/bin/bash
 # Builds the file to publish: build/dist/HalfLid-<version>.zip and its SHA-256 checksum.
 #
-#   scripts/package.sh                    version 0.1.0, arm64 and x86_64
+#   scripts/package.sh                    version 0.1.1, arm64 and x86_64
 #   VERSION=0.2.0 scripts/package.sh
 #   ARCHS=arm64 scripts/package.sh        this Mac's architecture only
 #
@@ -10,7 +10,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-export VERSION="${VERSION:-0.1.0}"
+export VERSION="${VERSION:-0.1.1}"
 export ARCHS="${ARCHS:-arm64 x86_64}"
 DIST="build/dist"
 ZIP="$DIST/HalfLid-$VERSION.zip"

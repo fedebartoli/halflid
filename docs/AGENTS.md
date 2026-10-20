@@ -39,7 +39,7 @@ Agents pane of Settings says "Not tested on a real install yet" under every agen
 | Agent | Recognised by | Session folder (times only) | What the rule rests on | Real install |
 | --- | --- | --- | --- | --- |
 | Cursor | the app (`/Cursor.app/`) and its command-line agent (`/cursor-agent/versions/`), plus the chat database | `~/.cursor/projects` | measured here | yes |
-| Claude Code | `claude`, `claude.exe`; paths with `/@anthropic-ai/claude-code` or `/claude/versions/` | `~/.claude/projects` | install layouts, below | no |
+| Claude Code | `claude`, `claude.exe`; paths with `/@anthropic-ai/claude-code` or `/claude/versions/` | `~/.claude/projects` | install layouts, below | one partial report |
 | Codex | `codex`; path with `/@openai/codex/` | `~/.codex/sessions` | install layouts, below | no |
 | opencode | `opencode`, `opencode.exe` | `~/.local/share/opencode` | install layouts, below | no |
 | GitHub Copilot CLI | `copilot` | `~/.copilot/session-state` | install layouts, below | no |
@@ -59,7 +59,8 @@ agent is packaged, as of 2026-10-20:
   after the version, for example `2.1.168`, never `claude` (see the bug reports
   [#12433](https://github.com/anthropics/claude-code/issues/12433) and
   [#49982](https://github.com/anthropics/claude-code/issues/49982)). That is why the entry also matches the path piece
-  `/claude/versions/`. The npm package runs `bin/claude.exe` (named in its `package.json`; the process is `claude.exe`), which
+  `/claude/versions/`. One real install agrees about the name (`2.1.304`, see "Reports received" below); the path piece has not
+  been seen on a real Mac yet. The npm package runs `bin/claude.exe` (named in its `package.json`; the process is `claude.exe`), which
   its postinstall step links to the binary of a platform package (`@anthropic-ai/claude-code-darwin-arm64`); either way the
   path contains `/@anthropic-ai/claude-code`. The Homebrew cask installs a file called `claude`. The Claude desktop app is a
   different program and is not matched.
@@ -136,6 +137,16 @@ same answers any other way).
 
 A passing report is what flips `verified` to `true` for that agent in `agents.json`, in a pull request that links the report.
 A failing one is just as useful: the `ps` lines say what to match.
+
+### Reports received
+
+- **Claude Code 2.1.304, native installer (`curl -fsSL https://claude.ai/install.sh | bash`), macOS, 2026-10-20: partial.**
+  The reporter wrote that the panel said "Fermo" (Idle in the Italian interface) with the agent started and sent nothing, which
+  is what step 3 expects. `ps -t` for that tab showed the login shell, then the agent with the name `2.1.304` and the command
+  name `claude`, and under the agent a child process `caffeinate`. So macOS did name the process after the version, as the
+  section above says, and the agent starts a `caffeinate` of its own (Half Lid does not depend on it). Steps 4 to 6 (Working,
+  back to Idle, Not running) have not been reported, and the exact path of the program was not in the output, so `verified`
+  stays `false`.
 
 ## Adding an agent
 

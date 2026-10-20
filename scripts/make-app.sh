@@ -1,7 +1,7 @@
 #!/bin/bash
 # Assembles build/HalfLid.app from a release build and signs it ad hoc (no Apple Developer account needed).
 #
-#   scripts/make-app.sh              version 0.1.0
+#   scripts/make-app.sh              version 0.1.1
 #   VERSION=0.2.0 scripts/make-app.sh
 #
 # Four executables live in the bundle: the resident menu bar app, the panel and the settings window (both started on demand,
@@ -11,7 +11,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-VERSION="${VERSION:-0.1.0}"
+VERSION="${VERSION:-0.1.1}"
 APP="build/HalfLid.app"
 ICONSET="build/AppIcon.iconset"
 

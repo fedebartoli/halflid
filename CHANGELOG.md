@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.1.1
+
+Corrections only. Half Lid holds the Mac, decides and lets go with the same code as in 0.1.0; what changed in the program is one
+sentence of the Settings window and the notices file. Everything under "Not checked" in 0.1.0 still applies, except as noted
+below.
+
+### Changed
+
+- Settings, Safety limits: the time limit no longer says that opening the lid starts a new count. It does not: the count runs
+  from the moment Half Lid took hold, and opening the lid only lets a new session start once the limit has stopped one. Fixed in
+  all twelve languages.
+- The notices file inside the app (`NOTICE.txt`) no longer says how the drawings of the mark were made.
+
+### Claude Code
+
+- A first report from one real install (Claude Code 2.1.304, native installer): macOS names the process after the version
+  (`2.1.304`), as `docs/AGENTS.md` expected, and the reporter wrote that the panel row said Idle with the agent started and left
+  alone. The other steps of the test (Working, back to Idle, Not running) are still to be reported, so Claude Code keeps "Not
+  tested on a real install yet".
+
+### In the repository
+
+- The README and the notes in `docs/` were read again against the code and corrected where they promised more than had been
+  checked (the guard, the time limit, the other tools). `docs/FINDINGS.md` has a new section with the gaps in the safety net
+  found by reading the code.
+- A picture for link previews (`docs/brand/social-preview.png`, drawn by `scripts/social-preview.sh`).
+- The pictures in the README show only Cursor working, the one agent seen working on a real Mac.
+
 ## 0.1.0
 
 The first release. Developed and tested on macOS 26.5.2, Apple Silicon. The app is signed ad hoc and is not notarized; see
