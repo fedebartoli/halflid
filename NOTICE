@@ -2,10 +2,9 @@ Half Lid
 Copyright (c) 2026 fedebartoli
 Released under the MIT License. See LICENSE.
 
-Half Lid's own artwork is three drawings of a laptop seen from the side (docs/brand/source), made by the maintainer with an AI
-image generator, and everything derived from them: the traced outlines in the source code, the menu bar mark, the app icon and
-the files in docs/brand. The maintainer releases them under the same MIT License as the code, to the extent that he holds
-rights in them. The terms of the generator that made the drawings apply to its output.
+Half Lid's own artwork is three drawings of a laptop seen from the side (docs/brand/source) and everything derived from them:
+the traced outlines in the source code, the menu bar mark, the app icon and the files in docs/brand. The maintainer releases
+them under the same MIT License as the code, to the extent that he holds rights in them.
 
 This file lists everything in Half Lid that comes from somewhere else.
 
