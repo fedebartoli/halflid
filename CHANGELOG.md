@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### In the repository
+
+- README, "Install": the first-launch dialog of a downloaded copy is described as macOS 26.5.2 showed it to the author. It offers
+  only Move to Trash and Done (choose Done), and it calls the app HalfLid, the name of the file.
+
 ## 0.1.1
 
 Corrections only. Half Lid holds the Mac, decides and lets go with the same code as in 0.1.0; what changed in the program is one

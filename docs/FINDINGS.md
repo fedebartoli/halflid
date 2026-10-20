@@ -191,8 +191,11 @@ close would be the dangerous case); closures of hours; battery power; a Mac that
   works is [NOT VERIFIED], because registering changes the user's Login Items.
 - **Gatekeeper rejects the ad-hoc signed app** (`spctl --assess`: rejected), as expected without notarization. The signature
   itself is valid (`codesign --verify --deep --strict`), also after zipping with `ditto` and unzipping. A downloaded copy gets
-  the quarantine flag and needs Open Anyway in System Settings, Privacy & Security. [NOT VERIFIED] on a quarantined copy: the
-  builds made here carry no flag.
+  the quarantine flag and needs Open Anyway in System Settings, Privacy & Security. [OK] The first launch of a quarantined
+  copy was seen once, on the 0.1.1 download (the author, macOS 26.5.2, Apple Silicon, system language Italian): macOS refuses
+  it with a dialog that says Apple cannot verify the app and offers only Move to Trash and Done. The dialog calls the app
+  HalfLid, the name of the file, not Half Lid. [NOT VERIFIED] the screens after that dialog (Privacy & Security, Open
+  Anyway) were not captured, and macOS 14 and 15 may word all of this differently.
 - **SwiftPM does not work on this Mac.** `swift build` fails to link the manifest of any package, even one made by
   `swift package init`: the `libPackageDescription` in these Command Line Tools does not match its interface (a stale
   `.private.swiftinterface` from 2024 sits next to a newer one). Hence `swiftc` scripts. Other installs may be fine.

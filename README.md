@@ -50,8 +50,10 @@ the Intel half of the download is built but has never been run.
 
 **From a download.** Unzip `HalfLid-<version>.zip`, drag `HalfLid.app` to Applications and open it. The app is signed
 ad hoc and is not notarized (that costs an Apple Developer subscription, which this project does not have), so macOS
-refuses the first launch of a downloaded copy. Open System Settings, Privacy & Security, find the message about Half Lid
-and choose Open Anyway. The same effect from a terminal: `xattr -dr com.apple.quarantine /Applications/HalfLid.app`.
+refuses the first launch of a downloaded copy. The dialog (as macOS 26.5.2 showed it) says that HalfLid was not opened
+because Apple cannot verify it, and offers only Move to Trash and Done: choose **Done**. Then open System Settings,
+Privacy & Security, find the message about HalfLid and choose Open Anyway. The same effect from a terminal:
+`xattr -dr com.apple.quarantine /Applications/HalfLid.app`.
 
 **From source.** Needs the Xcode Command Line Tools (`xcode-select --install`), not Xcode. A copy you build yourself has
 no quarantine flag and opens without the ritual.
