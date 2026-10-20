@@ -1,0 +1,58 @@
+{
+  "agents": [
+    {
+      "id": "cursor",
+      "processNames": [],
+      "pathContains": ["/Cursor.app/", "/cursor-agent/versions/"],
+      "sessionPaths": ["~/.cursor/projects"],
+      "verified": true,
+      "appBundleIds": ["com.todesktop.230313mzl4w4u92"],
+      "mark": "cursor"
+    },
+    {
+      "id": "claude-code",
+      "processNames": ["claude", "claude.exe"],
+      "pathContains": ["/@anthropic-ai/claude-code", "/claude/versions/"],
+      "sessionPaths": ["~/.claude/projects"],
+      "verified": false,
+      "appBundleIds": ["com.anthropic.claudefordesktop"],
+      "mark": "claude-code"
+    },
+    {
+      "id": "codex",
+      "processNames": ["codex"],
+      "pathContains": ["/@openai/codex/"],
+      "sessionPaths": ["~/.codex/sessions"],
+      "verified": false,
+      "appBundleIds": ["com.openai.codex"],
+      "mark": "codex"
+    },
+    {
+      "id": "opencode",
+      "processNames": ["opencode", "opencode.exe"],
+      "pathContains": [],
+      "sessionPaths": ["~/.local/share/opencode"],
+      "verified": false,
+      "appBundleIds": ["ai.opencode.desktop"],
+      "mark": "opencode"
+    },
+    {
+      "id": "copilot-cli",
+      "processNames": ["copilot"],
+      "pathContains": [],
+      "sessionPaths": ["~/.copilot/session-state"],
+      "verified": false,
+      "appBundleIds": [],
+      "mark": "copilot-cli"
+    },
+    {
+      "id": "goose",
+      "processNames": ["goose"],
+      "pathContains": [],
+      "sessionPaths": ["~/.local/share/goose/sessions", "~/Library/Application Support/Block/goose/sessions"],
+      "verified": false,
+      "appBundleIds": [],
+      "mark": "goose"
+    }
+  ]
+}

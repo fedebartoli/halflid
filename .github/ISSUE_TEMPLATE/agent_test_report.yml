@@ -1,0 +1,120 @@
+name: Agent test report
+description: You tried a coding agent with Half Lid on a real install (it works, or it does not)
+title: "Agent test: "
+labels: ["agent-test"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the most useful thing you can send. The protocol is in
+        [docs/AGENTS.md](https://github.com/fedebartoli/halflid/blob/main/docs/AGENTS.md#testing-an-agent-on-a-real-install)
+        and takes about 15 minutes; you do not need to close the lid. A report that says "Not running" is as useful as one that
+        says "works": the `ps` lines below are what the rule has to match.
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Claude Code
+        - Codex
+        - opencode
+        - GitHub Copilot CLI
+        - Goose
+        - Cursor
+        - Another agent (write its name below)
+    validations:
+      required: true
+  - type: input
+    id: agent_version
+    attributes:
+      label: Agent version and how you installed it
+      description: For example "2.1.168, native installer", "0.163.0, npm", "1.0.100, Homebrew cask".
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Half Lid version
+      description: Settings, About.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: mac
+    attributes:
+      label: macOS and Mac
+      description: For example "macOS 26.5.2, MacBook Pro M3 Pro".
+    validations:
+      required: true
+  - type: dropdown
+    id: idle
+    attributes:
+      label: Step 3, the agent is running and you sent it nothing
+      description: The agent's row in the Half Lid panel should say Idle.
+      options:
+        - Idle, as expected
+        - Not running
+        - Something else (explain below)
+    validations:
+      required: true
+  - type: dropdown
+    id: working
+    attributes:
+      label: Step 4, the agent works on a task of a minute or more
+      description: Within about 20 seconds the row should say Working and the icon should show that Half Lid is holding the Mac.
+      options:
+        - Working, as expected
+        - Stayed Idle
+        - Not running
+        - Something else (explain below)
+    validations:
+      required: true
+  - type: dropdown
+    id: finished
+    attributes:
+      label: Step 5, the agent has finished and waits for you
+      description: The row should go back to Idle within about a minute, and Half Lid should let go about two minutes later.
+      options:
+        - Idle and released, as expected
+        - Stayed Working
+        - Went Idle but did not release
+        - Not tried
+        - Something else (explain below)
+    validations:
+      required: true
+  - type: dropdown
+    id: quit
+    attributes:
+      label: Step 6, you quit the agent
+      description: The row should say Not running.
+      options:
+        - Not running, as expected
+        - Still Idle or Working
+        - Not tried
+    validations:
+      required: true
+  - type: textarea
+    id: ps
+    attributes:
+      label: The processes of the terminal tab, while the agent ran
+      description: |
+        The output of `ps -t ttys004 -o pid=,ppid=,ucomm=,comm=` (use the tty that `tty` printed in the tab where you started the
+        agent, without /dev/). It shows names and paths only, never command lines. Replace your user name in the paths if you like.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Diagnostics report
+      description: Settings, Diagnostics, "Copy report", taken while the agent was working if you can.
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: What was different from what is written above, how long things took, anything that surprised you.
+    validations:
+      required: false

@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      # Builds a debug copy and runs every check. The tests use fakes for the lid override, the screen, the clock and the
+      # battery, so nothing on the runner is touched.
+      - name: Tests
+        run: scripts/test.sh
+
+      # Builds both architectures, the app bundle and the zip. The Intel half is only compiled here, never run.
+      - name: Package
+        run: scripts/package.sh

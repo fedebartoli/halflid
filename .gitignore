@@ -1,0 +1,10 @@
+.build/
+build/
+.swiftpm/
+*.xcodeproj
+.DS_Store
+
+# Editor and assistant tooling of the maintainer's machine, not part of the project.
+.cursor/
+.agents/
+skills-lock.json

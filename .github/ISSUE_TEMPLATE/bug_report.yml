@@ -1,0 +1,72 @@
+name: Bug report
+description: Half Lid does something other than what the README says
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting this. The more of the fields below you fill in, the faster it can be understood. If the problem
+        is a security one, please do not post it here: use the **Security** tab, "Report a vulnerability".
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, in your own words.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to make it happen again
+      description: The steps, if you know them. "It happened once" is also a useful answer.
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Half Lid version
+      description: Settings, About.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: mac
+    attributes:
+      label: macOS and Mac
+      description: For example "macOS 26.5.2, MacBook Pro M3 Pro". Say whether an external monitor was connected and whether the Mac was on power.
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How you installed it
+      options:
+        - Downloaded the zip from a release
+        - Built it from source
+        - Homebrew tap
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Diagnostics report
+      description: Settings, Diagnostics, "Copy report", then paste it here. It has no paths and no chat text.
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: lid
+    attributes:
+      label: Output of scripts/lid-check.sh
+      description: Only if the problem is about the lid (the Mac slept, or stayed awake when it should not have). Read the output before posting it; it names processes and the times of the closures.
+      render: text
+    validations:
+      required: false

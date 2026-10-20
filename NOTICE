@@ -1,0 +1,75 @@
+Half Lid
+Copyright (c) 2026 fedebartoli
+Released under the MIT License. See LICENSE.
+
+Half Lid's own artwork is three drawings of a laptop seen from the side (docs/brand/source), made by the maintainer with an AI
+image generator, and everything derived from them: the traced outlines in the source code, the menu bar mark, the app icon and
+the files in docs/brand. The maintainer releases them under the same MIT License as the code, to the extent that he holds
+rights in them. The terms of the generator that made the drawings apply to its output.
+
+This file lists everything in Half Lid that comes from somewhere else.
+
+
+AGENT LOGOS
+===========
+
+Half Lid shows the logo of each coding agent it can watch, next to the agent's name, only to say which agent a row is about.
+The logos are small SVG files in Resources/agent-marks. The first lines of each file say where it came from.
+
+  Agent               Source          Licence of the artwork
+  ------------------  --------------  ----------------------
+  Cursor              simple-icons    CC0 1.0 Universal
+  Claude Code         simple-icons    CC0 1.0 Universal
+  opencode            simple-icons    CC0 1.0 Universal
+  GitHub Copilot CLI  simple-icons    CC0 1.0 Universal
+  Codex               lobe-icons      MIT License
+  Goose               lobe-icons      MIT License
+
+simple-icons    https://github.com/simple-icons/simple-icons
+                CC0 1.0 Universal (public domain dedication): https://creativecommons.org/publicdomain/zero/1.0/
+
+lobe-icons      https://github.com/lobehub/lobe-icons
+
+                MIT License
+
+                Copyright (c) 2023 LobeHub
+
+                Permission is hereby granted, free of charge, to any person obtaining a copy
+                of this software and associated documentation files (the "Software"), to deal
+                in the Software without restriction, including without limitation the rights
+                to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                copies of the Software, and to permit persons to whom the Software is
+                furnished to do so, subject to the following conditions:
+
+                The above copyright notice and this permission notice shall be included in all
+                copies or substantial portions of the Software.
+
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                SOFTWARE.
+
+
+TRADEMARKS
+==========
+
+Cursor, Claude, Claude Code, Codex, OpenAI, opencode, GitHub, GitHub Copilot and Goose, and their logos, are trademarks or
+registered trademarks of their respective owners. An open licence on a drawing of a logo does not give anyone rights over
+the trademark itself.
+
+Half Lid is an independent project. It is not affiliated with, endorsed by or sponsored by any of those companies or
+projects. Their names and logos appear only to identify the program a row refers to.
+
+If an owner objects to the use of a logo, delete its file from Resources/agent-marks (in the app: right-click Half Lid.app,
+Show Package Contents, Contents/Resources/agent-marks). Half Lid then shows that agent with the icon of the application,
+when it is installed, or with the first letter of its name. Nothing else changes.
+
+
+NO OTHER DEPENDENCIES
+=====================
+
+Half Lid is written in Swift and uses only the frameworks that ship with macOS (AppKit, SwiftUI, IOKit, UserNotifications,
+ServiceManagement and the system SQLite library). It bundles no other code and downloads nothing.
