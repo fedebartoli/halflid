@@ -106,21 +106,38 @@ func draw(_ text: String, size: CGFloat, weight: NSFont.Weight, color: CGColor, 
 // the pieces so the whole block sits in the middle of the picture, level with the panel.
 let shapes = LidGlyph.shapes(for: .active)
 let markInk = shapes.body.boundingBox // the tight box: `bodyBounds` also counts the control points of the curves
-let markWidth: CGFloat = 384
+let markWidth: CGFloat = 344
 let markScale = markWidth / markInk.width
 let markHeight = markInk.height * markScale
 
-let nameSize: CGFloat = 118
-let taglineSize: CGFloat = 34
-let taglineLeading: CGFloat = 46
-let smallSize: CGFloat = 20
+// What it does, in the order it happens: the lid is closed and the Mac stays awake while the agent works, then the Mac sleeps.
+// Everything here is something that was seen on a real Mac (docs/FINDINGS.md) or measured (README, "Measured"): the Mac slept
+// by itself 7 seconds after the hold was released with the lid closed; the screen was locked and the display asleep 0.1 s after
+// the lid closed; the app took 11 to 20 MB and under 1 % of one core (README, the table of figures). No claim about battery life
+// is made: it was not measured.
+let tagline = [
+    ["Lid closed, Mac awake", "while the agent works."], // one sentence on two lines
+    ["When it stops, the Mac sleeps."],
+]
+let small = [
+    "Screen locked and display off. The app: 11 to 20 MB, under 1 % of one core.",
+    "macOS menu bar app. No account, no network, no admin password. MIT.",
+]
 
-let gapAfterMark: CGFloat = 40
-let gapAfterName: CGFloat = 30
-let gapAfterTagline: CGFloat = 54
+let nameSize: CGFloat = 108
+let taglineSize: CGFloat = 38
+let taglineLeading: CGFloat = 50
+let taglineSentenceGap: CGFloat = 16 // extra room between the two sentences
+let smallSize: CGFloat = 20
+let smallLeading: CGFloat = 29
+
+let gapAfterMark: CGFloat = 34
+let gapAfterName: CGFloat = 40
+let gapAfterTagline: CGFloat = 36
 let nameHeight = nameSize * 0.72 // cap height of the system font
-let taglineHeight = taglineLeading + taglineSize * 0.72
-let smallHeight = smallSize * 0.72
+let taglineLines = tagline.flatMap { $0 }.count
+let taglineHeight = CGFloat(taglineLines - 1) * taglineLeading + CGFloat(tagline.count - 1) * taglineSentenceGap + taglineSize * 0.72
+let smallHeight = CGFloat(small.count - 1) * smallLeading + smallSize * 0.72
 let stackHeight = markHeight + gapAfterMark + nameHeight + gapAfterName + taglineHeight + gapAfterTagline + smallHeight
 var cursor = ((CGFloat(canvasHeight) + stackHeight) / 2).rounded() // top of the stack
 
@@ -135,14 +152,25 @@ context.fillPath(using: .winding)
 context.restoreGState()
 cursor -= markHeight + gapAfterMark
 
-draw("Half Lid", size: nameSize, weight: .semibold, color: offWhite, kern: -2.2, baseline: cursor - nameHeight)
+draw("Half Lid", size: nameSize, weight: .semibold, color: offWhite, kern: -2.1, baseline: cursor - nameHeight)
 cursor -= nameHeight + gapAfterName
 
-draw("Keeps your Mac working with the lid closed", size: taglineSize, weight: .regular, color: secondary, baseline: cursor - taglineSize * 0.72)
-draw("while your coding agents do.", size: taglineSize, weight: .regular, color: secondary, baseline: cursor - taglineSize * 0.72 - taglineLeading)
+var baseline = cursor - taglineSize * 0.72
+for (index, sentence) in tagline.enumerated() {
+    if index > 0 { baseline -= taglineSentenceGap }
+    for (row, text) in sentence.enumerated() {
+        if row > 0 { baseline -= taglineLeading }
+        draw(text, size: taglineSize, weight: .regular, color: offWhite, baseline: baseline)
+    }
+    if index < tagline.count - 1 { baseline -= taglineLeading }
+}
 cursor -= taglineHeight + gapAfterTagline
 
-draw("macOS menu bar app. No account, no network, no admin password. MIT.", size: smallSize, weight: .regular, color: tertiary, baseline: cursor - smallHeight)
+baseline = cursor - smallSize * 0.72
+for (index, text) in small.enumerated() {
+    if index > 0 { baseline -= smallLeading }
+    draw(text, size: smallSize, weight: .regular, color: secondary, baseline: baseline)
+}
 
 // MARK: write
 
