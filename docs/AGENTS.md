@@ -59,8 +59,9 @@ agent is packaged, as of 2026-10-20:
   after the version, for example `2.1.168`, never `claude` (see the bug reports
   [#12433](https://github.com/anthropics/claude-code/issues/12433) and
   [#49982](https://github.com/anthropics/claude-code/issues/49982)). That is why the entry also matches the path piece
-  `/claude/versions/`. One real install agrees about the name (`2.1.304`, see "Reports received" below); the path piece has not
-  been seen on a real Mac yet. The npm package runs `bin/claude.exe` (named in its `package.json`; the process is `claude.exe`), which
+  `/claude/versions/`. One real install agrees about the name (`2.1.304`) and was recognised, which can only have happened through the path
+  piece, since no entry in `processNames` lists a version number (see "Reports received" below); the literal path has not been
+  received yet. The npm package runs `bin/claude.exe` (named in its `package.json`; the process is `claude.exe`), which
   its postinstall step links to the binary of a platform package (`@anthropic-ai/claude-code-darwin-arm64`); either way the
   path contains `/@anthropic-ai/claude-code`. The Homebrew cask installs a file called `claude`. The Claude desktop app is a
   different program and is not matched.
@@ -147,6 +148,12 @@ A failing one is just as useful: the `ps` lines say what to match.
   section above says, and the agent starts a `caffeinate` of its own (Half Lid does not depend on it). Steps 4 to 6 (Working,
   back to Idle, Not running) have not been reported, and the exact path of the program was not in the output, so `verified`
   stays `false`.
+  Second message, 2026-10-21. Step 4 passed: the row already said Working when the reporter opened the panel, 3 to 4 seconds
+  after he sent the task (the limit is 20). For step 5 (back to Idle, then Half Lid lets go), step 6 (Not running) and the output
+  of `ls -l "$(command -v claude)"` the answer was "appena finisce" ("as soon as it finishes"), read here as: he will report them
+  when his task ends. They are still open and `verified` stays `false`. What the two messages already show: Half Lid recognised
+  the process, whose name is `2.1.304`, a name no entry in `processNames` lists, so the match was made through the path
+  (`AgentDefinition.matches`), which for the native installer means `/claude/versions/`; only the literal path is missing.
 
 ## Adding an agent
 
